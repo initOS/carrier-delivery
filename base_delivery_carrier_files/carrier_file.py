@@ -95,14 +95,9 @@ class CarrierFile(models.Model):
             # commit the write after each file created
             # but I encountered lock because the picking
             # was already modified in the current transaction
-            try:
-                if self._write_file(filename, file_content):
-                    picking_obj.browse(picking_ids).write({
-                        'carrier_file_generated': True})
-            except Exception as e:
-                log.exception("Could not create the picking file "
-                              "for pickings %s: %s",
-                              picking_ids, e)
+            if self._write_file(filename, file_content):
+                picking_obj.browse(picking_ids).write({
+                    'carrier_file_generated': True})
         return True
 
     @api.one
