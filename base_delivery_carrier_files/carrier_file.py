@@ -95,7 +95,12 @@ class CarrierFile(models.Model):
             # commit the write after each file created
             # but I encountered lock because the picking
             # was already modified in the current transaction
-            if self._write_file(filename, file_content):
+            picking_context = dict(
+                active_model='stock.picking',
+                active_ids=picking_ids
+            )
+            if self.with_context(**picking_context).\
+                    _write_file(filename, file_content):
                 picking_obj.browse(picking_ids).write({
                     'carrier_file_generated': True})
         return True
